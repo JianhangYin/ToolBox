@@ -82,8 +82,8 @@ export default {
       formValidate: {
         nameA: '',
         nameB: '',
-        timeA: [0, 0, 0, 0, 0],
-        timeB: [0, 0, 0, 0, 0],
+        timeA: [],
+        timeB: [],
         foodA: [0, 0, 0, 0, 0],
         foodB: [0, 0, 0, 0, 0],
         budget: 0
@@ -110,6 +110,23 @@ export default {
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
+          this.$axios({
+            method: 'post',
+            url: '/api/update-form',
+            data: {
+              nameA: this.formValidate.nameA,
+              nameB: this.formValidate.nameB,
+              timeA: this.formValidate.timeA,
+              timeB: this.formValidate.timeB,
+              foodA: this.formValidate.foodA,
+              foodB: this.formValidate.foodB,
+              budget: this.formValidate.budget
+            }
+          })
+            .then(response => {
+              console.log(response, 'success')
+            })
+            .catch(error => { console.log(error, 'error'); this.$router.push({ path: '/meal-planning/meal-plan' }) })
           this.$Message.success('Success!')
         } else {
           this.$Message.error('Fail!')
