@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import Questionnaire from '../components/mealplanning/Questionnaire'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      path: '/meal-planning',
+      name: 'Questionnaire',
+      component: Questionnaire
     }
   ]
 })
