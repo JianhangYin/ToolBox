@@ -5,7 +5,7 @@
         <Split v-model="split1">
           <div slot="left" class="demo-split-pane">
             <FormItem label="Name" prop="nameA">
-              <Input v-model="formValidate.nameA" placeholder="Enter your name"></Input>
+              <Input v-model="formValidate.nameA" placeholder="Enter your name"/>
             </FormItem>
             <FormItem label="Free Time" prop="timeA">
               <CheckboxGroup v-model="formValidate.timeA">
@@ -32,12 +32,12 @@
               <Slider v-model="formValidate.foodA[4]" show-input></Slider>
             </FormItem>
             <FormItem label="Budget" prop="budget">
-              <Input v-model="formValidate.budget" placeholder="Enter your budget"></Input>
+              <Input v-model="formValidate.budget" placeholder="Enter your budget"/>
             </FormItem>
           </div>
           <div slot="right" class="demo-split-pane">
             <FormItem label="Name" prop="nameB">
-              <Input v-model="formValidate.nameB" placeholder="Enter your name"></Input>
+              <Input v-model="formValidate.nameB" placeholder="Enter your name"/>
             </FormItem>
             <FormItem label="Free Time" prop="timeB">
               <CheckboxGroup v-model="formValidate.timeB">
@@ -67,6 +67,9 @@
               <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
               <Button @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>
             </FormItem>
+            <FormItem>
+              <Button type="error" @click="webScraping()">Web Scraping</Button>
+            </FormItem>
           </div>
         </Split>
       </div>
@@ -77,7 +80,7 @@
 <script>
 export default {
   name: 'Questionnaire',
-  data () {
+  data: function () {
     return {
       formValidate: {
         nameA: '',
@@ -110,10 +113,9 @@ export default {
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.$axios({
-            method: 'post',
-            url: '/api/update-form',
-            data: {
+          this.$axios.post(
+            '/api/meal-planning',
+            {
               nameA: this.formValidate.nameA,
               nameB: this.formValidate.nameB,
               timeA: this.formValidate.timeA,
@@ -122,19 +124,43 @@ export default {
               foodB: this.formValidate.foodB,
               budget: this.formValidate.budget
             }
-          })
+          )
             .then(response => {
               console.log(response, 'success')
+              this.$router.push({ path: '/meal-planning/meal-plan' })
+              this.toast(true, 'Submit success!')
             })
-            .catch(error => { console.log(error, 'error'); this.$router.push({ path: '/meal-planning/meal-plan' }) })
-          this.$Message.success('Success!')
+            .catch(error => {
+              console.log(error, 'error')
+              this.toast(false, 'Submit fail!')
+            })
         } else {
-          this.$Message.error('Fail!')
+          this.$Message.error('Form validation fail!')
         }
       })
     },
     handleReset (name) {
       this.$refs[name].resetFields()
+    },
+    webScraping () {
+      this.$axios.get(
+        '/api/web-scraping'
+      )
+        .then(response => {
+          console.log(response, 'success')
+          this.toast(true, 'Database updated!')
+        })
+        .catch(error => {
+          console.log(error, 'error')
+          this.toast(false, 'Web scraping fail!')
+        })
+    },
+    toast (ifSuccess, word) {
+      if (ifSuccess) {
+        this.$Message.success(word)
+      } else {
+        this.$Message.error(word)
+      }
     }
   }
 }
@@ -143,14 +169,10 @@ export default {
 <style scoped>
   .demo-split{
     margin: 0 100px;
-    height: 60vh;
+    height: 65vh;
     border: 1px solid #dcdee2;
   }
   .demo-split-pane{
     padding: 50px;
-  }
-  .submit-button{
-    text-align: center;
-    margin-top: 20px;
   }
 </style>
