@@ -2,7 +2,7 @@
   <div>
     <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
       <div class="demo-split">
-        <Split v-model="split1">
+        <Split v-model="split">
           <div slot="left" class="demo-split-pane">
             <FormItem label="Name" prop="nameA">
               <Input v-model="formValidate.nameA" placeholder="Enter your name"/>
@@ -68,12 +68,25 @@
               <Button @click="handleReset('formValidate')" style="margin-left: 8px">Reset</Button>
             </FormItem>
             <FormItem>
-              <Button type="error" @click="webScraping()">Web Scraping</Button>
+              <Button type="error" @click="modal = true">Web Scraping</Button>
             </FormItem>
           </div>
         </Split>
       </div>
     </Form>
+    <Modal v-model="modal" width="400">
+      <p slot="header" style="color:#f60;text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>Attention</span>
+      </p>
+      <div style="text-align:center">
+        <p>Are you sure to update the recipe database?</p>
+        <p>It will take about 3 minutes.</p>
+      </div>
+      <div slot="footer">
+        <Button type="error" size="large" long :loading="modal_loading" @click="webScraping">Confirm</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -106,7 +119,10 @@ export default {
             transform (value) { return Number(value) }
           }
         ]
-      }
+      },
+      split: 0.5,
+      modal_loading: false,
+      modal: false
     }
   },
   methods: {
@@ -127,7 +143,12 @@ export default {
           )
             .then(response => {
               console.log(response, 'success')
-              this.$router.push({ path: '/meal-planning/meal-plan' })
+              this.$router.push({
+                name: 'MealPlan',
+                params: {
+                  data: response.data
+                }
+              })
               this.toast(true, 'Submit success!')
             })
             .catch(error => {
@@ -143,14 +164,19 @@ export default {
       this.$refs[name].resetFields()
     },
     webScraping () {
+      this.modal_loading = true
       this.$axios.get(
         '/api/web-scraping'
       )
         .then(response => {
+          this.modal_loading = false
+          this.modal = false
           console.log(response, 'success')
           this.toast(true, 'Database updated!')
         })
         .catch(error => {
+          this.modal_loading = false
+          this.modal = false
           console.log(error, 'error')
           this.toast(false, 'Web scraping fail!')
         })

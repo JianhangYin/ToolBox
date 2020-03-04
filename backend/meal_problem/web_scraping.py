@@ -114,6 +114,7 @@ def scraping():
     df = pd.DataFrame(ar)
     df = df.dropna(axis=0)
     df = df[df['personal_rating'].map(len) > 9]
+    df = df.sort_values(by=['title'])
     df.to_csv(nutrition_info_path)
 
     p_r = pd.DataFrame(columns=['title', 'user', 'rating'])
