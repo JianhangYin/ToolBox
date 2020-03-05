@@ -20,8 +20,8 @@ Output:
 '''
 
 
-def programming(number, time, budget, name_list):
-    df = cf.filtering()
+def programming(number, time, budget, name_list, food_list, food_a, food_b):
+    df = cf.filtering(food_list, food_a, food_b)
     dfn = pd.read_csv('./resource/meal_problem/nutrition_info.csv')
     recipe_list = df.columns.tolist()
     recipe_len = number
@@ -35,8 +35,8 @@ def programming(number, time, budget, name_list):
     K = recipe_len
     T = time
 
-    # rating for user 0 and user 1
-    rating = df.iloc[0:2, 0:K].values.tolist()
+    # rating for user -1 and user -2 (A and B are at the end of df)
+    rating = df.iloc[-2:, 0:K].values.tolist()
 
     calories = dfn['calories'][:number]
     protein = dfn['protein'][:number]

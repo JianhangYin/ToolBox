@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100" label-position="left">
       <div class="demo-split">
         <Split v-model="split">
           <div slot="left" class="demo-split-pane">
@@ -16,20 +16,20 @@
                 <Checkbox label="Friday"></Checkbox>
               </CheckboxGroup>
             </FormItem>
-            <FormItem label="Taco" prop="foodA">
-              <Slider v-model="formValidate.foodA[0]" show-input></Slider>
+            <FormItem :label="foodList[0]" prop="foodA" :label-width="400">
+              <Rate v-model="formValidate.foodA[0]" />
             </FormItem>
-            <FormItem label="Rice" prop="foodA">
-              <Slider v-model="formValidate.foodA[1]" show-input></Slider>
+            <FormItem :label="foodList[1]" prop="foodA" :label-width="400">
+              <Rate v-model="formValidate.foodA[1]" />
             </FormItem>
-            <FormItem label="Noodle" prop="foodA">
-              <Slider v-model="formValidate.foodA[2]" show-input></Slider>
+            <FormItem :label="foodList[2]" prop="foodA" :label-width="400">
+              <Rate v-model="formValidate.foodA[2]" />
             </FormItem>
-            <FormItem label="Burger" prop="foodA">
-              <Slider v-model="formValidate.foodA[3]" show-input></Slider>
+            <FormItem :label="foodList[3]" prop="foodA" :label-width="400">
+              <Rate v-model="formValidate.foodA[3]" />
             </FormItem>
-            <FormItem label="Sushi" prop="foodA">
-              <Slider v-model="formValidate.foodA[4]" show-input></Slider>
+            <FormItem :label="foodList[4]" prop="foodA" :label-width="400">
+              <Rate v-model="formValidate.foodA[4]" />
             </FormItem>
             <FormItem label="Budget" prop="budget">
               <Input v-model="formValidate.budget" placeholder="Enter your budget"/>
@@ -48,20 +48,20 @@
                 <Checkbox label="Friday"></Checkbox>
               </CheckboxGroup>
             </FormItem>
-            <FormItem label="Taco" prop="foodB">
-              <Slider v-model="formValidate.foodB[0]" show-input></Slider>
+            <FormItem :label="foodList[0]" prop="foodB" :label-width="400">
+              <Rate v-model="formValidate.foodB[0]" />
             </FormItem>
-            <FormItem label="Rice" prop="foodB">
-              <Slider v-model="formValidate.foodB[1]" show-input></Slider>
+            <FormItem :label="foodList[1]" prop="foodB" :label-width="400">
+              <Rate v-model="formValidate.foodB[1]" />
             </FormItem>
-            <FormItem label="Noodle" prop="foodB">
-              <Slider v-model="formValidate.foodB[2]" show-input></Slider>
+            <FormItem :label="foodList[2]" prop="foodB" :label-width="400">
+              <Rate v-model="formValidate.foodB[2]" />
             </FormItem>
-            <FormItem label="Burger" prop="foodB">
-              <Slider v-model="formValidate.foodB[3]" show-input></Slider>
+            <FormItem :label="foodList[3]" prop="foodB" :label-width="400">
+              <Rate v-model="formValidate.foodB[3]" />
             </FormItem>
-            <FormItem label="Sushi" prop="foodB">
-              <Slider v-model="formValidate.foodB[4]" show-input></Slider>
+            <FormItem :label="foodList[4]" prop="foodB" :label-width="400">
+              <Rate v-model="formValidate.foodB[4]" />
             </FormItem>
             <FormItem>
               <Button type="primary" @click="handleSubmit('formValidate')">Submit</Button>
@@ -100,8 +100,8 @@ export default {
         nameB: '',
         timeA: [],
         timeB: [],
-        foodA: [0, 0, 0, 0, 0],
-        foodB: [0, 0, 0, 0, 0],
+        foodA: [0.0, 0.0, 0.0, 0.0, 0.0],
+        foodB: [0.0, 0.0, 0.0, 0.0, 0.0],
         budget: 0
       },
       ruleValidate: {
@@ -122,8 +122,20 @@ export default {
       },
       split: 0.5,
       modal_loading: false,
-      modal: false
+      modal: false,
+      foodList: ['loading...', 'loading...', 'loading...', 'loading...', 'loading...']
     }
+  },
+  created: function () {
+    this.$axios.get(
+      '/api/get-five-recipe'
+    )
+      .then(response => {
+        this.foodList = response.data.recipe.map(item => item[0])
+      })
+      .catch(error => {
+        console.log(error, 'error')
+      })
   },
   methods: {
     handleSubmit (name) {
@@ -138,7 +150,8 @@ export default {
               timeB: this.formValidate.timeB,
               foodA: this.formValidate.foodA,
               foodB: this.formValidate.foodB,
-              budget: this.formValidate.budget
+              budget: this.formValidate.budget,
+              foodList: this.foodList
             }
           )
             .then(response => {

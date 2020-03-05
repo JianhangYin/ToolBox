@@ -1,8 +1,13 @@
 from django.http import HttpResponse
 import json
-
+import backend.meal_problem.get_recipe as gr
 import backend.meal_problem.web_scraping as ws
 import backend.meal_problem.mixed_integer_programming as mip
+
+
+def get_five_recipe(request):
+    dic = {'recipe': gr.getting()}
+    return HttpResponse(json.dumps(dic))
 
 
 def web_scraping(request):
@@ -17,6 +22,9 @@ def post_meal_planning(request):
         name_b = body.get('nameB', '')
         time_a = body.get('timeA', [])
         time_b = body.get('timeB', [])
+        food_a = body.get('foodA', [])
+        food_b = body.get('foodB', [])
+        food_list = body.get('foodList', [])
         time_list_a = []
         time_list_b = []
         week_dict = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
@@ -30,7 +38,15 @@ def post_meal_planning(request):
             else:
                 time_list_b.append(0)
         budget = body.get('budget', '0')
-        dic = mip.programming(115, [time_list_a, time_list_b], int(budget), [name_a, name_b])
+        dic = mip.programming(
+            115,
+            [time_list_a, time_list_b],
+            int(budget),
+            [name_a, name_b],
+            food_list,
+            food_a,
+            food_b
+        )
         dic = json.dumps(dic)
         return HttpResponse(dic)
     else:
